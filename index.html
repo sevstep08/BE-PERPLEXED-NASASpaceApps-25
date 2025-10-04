@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Space Apps: Smart Urban Planning Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.109/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.109/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>🌍 NASA Smart Urban Planning Tool</h1>
+                <p>Using Earth Observation Data for Sustainable City Development</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="panel-section">
+                    <h3>Greenhouse Gas Selection</h3>
+                    <div class="gas-toggles">
+                        <button class="gas-toggle active" data-gas="co2">
+                            <span class="gas-indicator co2"></span>
+                            CO₂ (ppm)
+                        </button>
+                        <button class="gas-toggle" data-gas="ch4">
+                            <span class="gas-indicator ch4"></span>
+                            CH₄ (ppm)
+                        </button>
+                        <button class="gas-toggle" data-gas="n2o">
+                            <span class="gas-indicator n2o"></span>
+                            N₂O (ppm)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Time Navigation</h3>
+                    <div class="time-controls">
+                        <label for="timeSlider">Year: <span id="currentYear">2023</span></label>
+                        <input type="range" id="timeSlider" min="1979" max="2025" value="2023" class="form-control">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Visualization</h3>
+                    <div class="viz-controls">
+                        <label for="opacitySlider">Data Opacity: <span id="opacityValue">80%</span></label>
+                        <input type="range" id="opacitySlider" min="10" max="100" value="80" class="form-control">
+                        <button id="resetView" class="btn btn--secondary btn--sm">Reset View</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Legend</h3>
+                    <div class="legend">
+                        <div class="legend-gradient"></div>
+                        <div class="legend-labels">
+                            <span>Low</span>
+                            <span>Medium</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Globe Container -->
+            <div class="globe-container">
+                <div id="cesiumContainer"></div>
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <p>Loading Earth observation data...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="info-panel" id="infoPanel">
+                <div class="info-header">
+                    <h3 id="cityName">Select a city</h3>
+                    <button id="closeInfo" class="btn btn--sm">×</button>
+                </div>
+                <div class="info-content" id="infoContent">
+                    <p>Click on a data point to view detailed city information and planning recommendations.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Community Input Modal -->
+        <div class="modal hidden" id="communityModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Community Environmental Report</h2>
+                    <button id="closeCommunityModal" class="btn btn--sm">×</button>
+                </div>
+                <div class="modal-body">
+                    <form id="communityForm">
+                        <div class="form-group">
+                            <label class="form-label">Issue Category</label>
+                            <select id="issueCategory" class="form-control">
+                                <option value="air-quality">Air Quality</option>
+                                <option value="green-spaces">Green Spaces</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="energy">Energy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="issueLocation" class="form-control" placeholder="Enter city or click on map">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="issueDescription" class="form-control" rows="3" placeholder="Describe the environmental issue..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn--primary">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Educational Modal -->
+        <div class="modal hidden" id="educationModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>How NASA Earth Data Helps Urban Planning</h2>
+                    <button id="closeEducationModal" class="btn btn--sm">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="education-section">
+                        <h3>CAMS Global Dataset</h3>
+                        <p>The Copernicus Atmosphere Monitoring Service (CAMS) provides global greenhouse gas data from 1979-2025, helping urban planners understand:</p>
+                        <ul>
+                            <li>Historical emission trends</li>
+                            <li>Seasonal variations in air quality</li>
+                            <li>Impact of policy changes</li>
+                            <li>Climate resilience planning</li>
+                        </ul>
+                    </div>
+                    <div class="education-section">
+                        <h3>Planning Applications</h3>
+                        <ul>
+                            <li><strong>Transportation:</strong> Optimize public transit routes based on emission hotspots</li>
+                            <li><strong>Green Infrastructure:</strong> Place parks and trees where air quality is poorest</li>
+                            <li><strong>Zoning:</strong> Restrict industrial development in sensitive areas</li>
+                            <li><strong>Climate Action:</strong> Set evidence-based emission reduction targets</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Toolbar -->
+        <div class="bottom-toolbar">
+            <button id="communityInputBtn" class="btn btn--primary">
+                📝 Report Environmental Issue
+            </button>
+            <button id="educationBtn" class="btn btn--secondary">
+                📚 Learn More
+            </button>
+            <div class="data-info">
+                <span>Data Source: NASA CAMS Global GHG Dataset</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
